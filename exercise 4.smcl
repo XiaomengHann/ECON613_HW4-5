@@ -1,0 +1,291 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\home\Desktop\exercise 4.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Apr 2019, 20:46:16
+
+{com}. * Question 1
+
+. 
+. clear all
+{res}
+{com}. 
+. set more off, perm
+{txt}({cmd:set more} preference recorded)
+
+{com}. 
+. set scrollbufsize 2000000
+{txt}({cmd:set scrollbufsize} will take effect the next time you launch Stata)
+
+{com}. 
+. 
+. 
+. insheet using "C:\Users\home\Desktop\class\ECON 613\HW4\Koop-Tobias.csv", clear
+{txt}(10 vars, 17,919 obs)
+
+{com}. 
+. xtset personid timetrnd
+{res}{txt}{col 8}panel variable:  {res}personid (unbalanced)
+{txt}{col 9}time variable:  {res}{col 25}timetrnd, 0 to 14, but with gaps
+{txt}{col 17}delta:  {res}1 unit
+
+{com}. 
+. bysort personid: gen t = _n
+
+. 
+. xtdes
+
+{txt}personid:  {res}1{txt}, {res}2{txt}, ..., {res}2178                                   {txt}n ={res}       2178
+{txt}timetrnd:  {res}0, 1, ..., 14                                     {txt}T ={res}         15
+           {txt}Delta(timetrnd) = {res}1 unit
+           {txt}Span(timetrnd)  = {res}15 periods
+           {txt}(personid*timetrnd uniquely identifies each observation)
+
+Distribution of T_i:   min      5%     25%       50%       75%     95%     max
+                    {res}     1       2       5         8        11      14      15
+
+{txt}{col 6}Freq.  Percent    Cum. {c |}  Pattern
+ {hline 27}{c +}{c -}{c -}{hline 15}
+{res}       93      4.27    4.27{txt} {c |}  {res}111111111111111
+       46      2.11    6.38{txt} {c |}  {res}........1111111
+       45      2.07    8.45{txt} {c |}  {res}......111111111
+       44      2.02   10.47{txt} {c |}  {res}.......11111111
+       43      1.97   12.44{txt} {c |}  {res}.11111111111111
+       42      1.93   14.37{txt} {c |}  {res}..1111111111111
+       36      1.65   16.02{txt} {c |}  {res}....11111111111
+       35      1.61   17.63{txt} {c |}  {res}...111111111111
+       30      1.38   19.01{txt} {c |}  {res}..........11111
+     1764     80.99  100.00{txt} {c |} (other patterns)
+ {hline 27}{c +}{c -}{c -}{hline 15}
+{res}     2178    100.00        {txt} {c |}  {res}XXXXXXXXXXXXXXX
+
+{com}. 
+. 
+. 
+. gen ind1 = personid==1
+
+. 
+. gen logwage_1 = ind1*logwage
+
+. 
+. gen time_1 = ind1*timetrnd
+
+. 
+. scatter logwage_1 time_1
+{res}
+{com}. 
+. gen ind2 = personid==2
+
+. 
+. gen logwage_2 = ind2*logwage
+
+. 
+. gen time_2 = ind2*timetrnd
+
+. 
+. scatter logwage_2 time_2
+{res}
+{com}. 
+. gen ind3 = personid==4
+
+. 
+. gen logwage_3 = ind3*logwage
+
+. 
+. gen time_3 = ind3*timetrnd
+
+. 
+. scatter logwage_3 time_3
+{res}
+{com}. 
+. gen ind4 = personid==6
+
+. 
+. gen logwage_4 = ind4*logwage
+
+. 
+. gen time_4 = ind4*timetrnd
+
+. 
+. scatter logwage_4 time_4
+{res}
+{com}. 
+. gen ind5 = personid==8
+
+. 
+. gen logwage_5 = ind5*logwage
+
+. 
+. gen time_5 = ind5*timetrnd
+
+. 
+. scatter logwage_5 time_5
+{res}
+{com}. 
+. 
+. 
+. * Question 2
+
+. 
+.  xtreg logwage educ potexper, re
+{res}
+{txt}Random-effects GLS regression                   Number of obs     = {res}    17,919
+{txt}Group variable: {res}personid                        {txt}Number of groups  = {res}     2,178
+
+{txt}R-sq:                                           Obs per group:
+     within  = {res}0.1961                                         {txt}min = {res}         1
+{txt}     between = {res}0.1533                                         {txt}avg = {res}       8.2
+{txt}     overall = {res}0.1578                                         {txt}max = {res}        15
+
+                                                {txt}Wald chi2({res}2{txt})      =  {res}  4209.96
+{txt}corr(u_i, X)   = {res}0{txt} (assumed)                    Prob > chi2       =     {res}0.0000
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     logwage{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}educ {c |}{col 14}{res}{space 2}  .107938{col 26}{space 2} .0033832{col 37}{space 1}   31.90{col 46}{space 3}0.000{col 54}{space 4} .1013071{col 67}{space 3}  .114569
+{txt}{space 4}potexper {c |}{col 14}{res}{space 2} .0387645{col 26}{space 2} .0007178{col 37}{space 1}   54.00{col 46}{space 3}0.000{col 54}{space 4} .0373576{col 67}{space 3} .0401714
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .5635206{col 26}{space 2} .0438846{col 37}{space 1}   12.84{col 46}{space 3}0.000{col 54}{space 4} .4775083{col 67}{space 3} .6495328
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} .37207276
+     {txt}sigma_e {c |} {res} .33545728
+         {txt}rho {c |} {res}  .5516129{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+
+{com}. 
+.  
+. 
+. * Question 3
+
+. 
+. xtreg logwage educ potexper, fe
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    17,919
+{txt}Group variable: {res}personid{txt}{col 49}Number of groups{col 67}={col 69}{res}     2,178
+
+{txt}R-sq:{col 49}Obs per group:
+     within  = {res}0.1964{col 63}{txt}min{col 67}={col 69}{res}         1
+{txt}     between = {res}0.1550{col 63}{txt}avg{col 67}={col 69}{res}       8.2
+{txt}     overall = {res}0.1551{col 63}{txt}max{col 67}={col 69}{res}        15
+
+{txt}{col 49}F({res}2{txt},{res}15739{txt}){col 67}={col 70}{res}  1923.47
+{txt}corr(u_i, Xb){col 16}= {res}-0.1273{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0000
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     logwage{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}educ {c |}{col 14}{res}{space 2}  .123662{col 26}{space 2} .0057619{col 37}{space 1}   21.46{col 46}{space 3}0.000{col 54}{space 4} .1123681{col 67}{space 3} .1349559
+{txt}{space 4}potexper {c |}{col 14}{res}{space 2} .0385611{col 26}{space 2} .0007585{col 37}{space 1}   50.84{col 46}{space 3}0.000{col 54}{space 4} .0370744{col 67}{space 3} .0400478
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .4068016{col 26}{space 2} .0717348{col 37}{space 1}    5.67{col 46}{space 3}0.000{col 54}{space 4} .2661931{col 67}{space 3}   .54741
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} .40290853
+     {txt}sigma_e {c |} {res} .33545728
+         {txt}rho {c |} {res} .59059603{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+F test that all u_i=0: F({res}2177{txt}, {res}15739{txt}) = {res}9.95{col 62}{txt}Prob > F = {res}0.0000
+
+{com}. 
+. xtreg logwage educ potexper, be
+
+{txt}Between regression (regression on group means)  Number of obs     = {res}    17,919
+{txt}Group variable: {res}personid                        {txt}Number of groups  = {res}     2,178
+
+{txt}R-sq:                                           Obs per group:
+     within  = {res}0.1962                                         {txt}min = {res}         1
+{txt}     between = {res}0.1553                                         {txt}avg = {res}       8.2
+{txt}     overall = {res}0.1518                                         {txt}max = {res}        15
+
+                                                {txt}F({res}2{txt},{res}2175{txt})         =  {res}   200.01
+{txt}sd(u_i + avg(e_i.))= {res} .3991313                  {txt}Prob > F          =     {res}0.0000
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     logwage{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}educ {c |}{col 14}{res}{space 2} .0930999{col 26}{space 2} .0046685{col 37}{space 1}   19.94{col 46}{space 3}0.000{col 54}{space 4} .0839447{col 67}{space 3} .1022551
+{txt}{space 4}potexper {c |}{col 14}{res}{space 2} .0259987{col 26}{space 2} .0036049{col 37}{space 1}    7.21{col 46}{space 3}0.000{col 54}{space 4} .0189294{col 67}{space 3} .0330681
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .8455688{col 26}{space 2} .0770179{col 37}{space 1}   10.98{col 46}{space 3}0.000{col 54}{space 4} .6945324{col 67}{space 3} .9966052
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. 
+. 
+. xtset personid t
+{res}{txt}{col 8}panel variable:  {res}personid (unbalanced)
+{txt}{col 9}time variable:  {res}{col 25}t, 1 to 15
+{txt}{col 17}delta:  {res}1 unit
+
+{com}. 
+. xtdes
+
+{txt}personid:  {res}1{txt}, {res}2{txt}, ..., {res}2178                                   {txt}n ={res}       2178
+       {txt}t:  {res}1, 2, ..., 15                                     {txt}T ={res}         15
+           {txt}Delta(t) = {res}1 unit
+           {txt}Span(t)  = {res}15 periods
+           {txt}(personid*t uniquely identifies each observation)
+
+Distribution of T_i:   min      5%     25%       50%       75%     95%     max
+                    {res}     1       2       5         8        11      14      15
+
+{txt}{col 6}Freq.  Percent    Cum. {c |}  Pattern
+ {hline 27}{c +}{c -}{c -}{hline 15}
+{res}      202      9.27    9.27{txt} {c |}  {res}11111111.......
+      202      9.27   18.55{txt} {c |}  {res}1111111111.....
+      201      9.23   27.78{txt} {c |}  {res}1111111........
+      200      9.18   36.96{txt} {c |}  {res}111111111......
+      182      8.36   45.32{txt} {c |}  {res}11111111111....
+      165      7.58   52.89{txt} {c |}  {res}111111.........
+      148      6.80   59.69{txt} {c |}  {res}11111..........
+      148      6.80   66.48{txt} {c |}  {res}111111111111...
+      136      6.24   72.73{txt} {c |}  {res}1111111111111..
+      594     27.27  100.00{txt} {c |} (other patterns)
+ {hline 27}{c +}{c -}{c -}{hline 15}
+{res}     2178    100.00        {txt} {c |}  {res}XXXXXXXXXXXXXXX
+
+{com}. 
+. gen logwage_D = D.logwage
+{txt}(2,178 missing values generated)
+
+{com}. 
+. gen educ_D = D.educ
+{txt}(2,178 missing values generated)
+
+{com}. 
+. gen potexper_D = D.potexper
+{txt}(2,178 missing values generated)
+
+{com}. 
+. xtreg logwage_D educ_D potexper_D, fe
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    15,741
+{txt}Group variable: {res}personid{txt}{col 49}Number of groups{col 67}={col 69}{res}     2,095
+
+{txt}R-sq:{col 49}Obs per group:
+     within  = {res}0.0008{col 63}{txt}min{col 67}={col 69}{res}         1
+{txt}     between = {res}0.0010{col 63}{txt}avg{col 67}={col 69}{res}       7.5
+{txt}     overall = {res}0.0010{col 63}{txt}max{col 67}={col 69}{res}        14
+
+{txt}{col 49}F({res}2{txt},{res}13644{txt}){col 67}={col 70}{res}     5.32
+{txt}corr(u_i, Xb){col 16}= {res}-0.0017{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0049
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}   logwage_D{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}educ_D {c |}{col 14}{res}{space 2} .0218726{col 26}{space 2} .0097279{col 37}{space 1}    2.25{col 46}{space 3}0.025{col 54}{space 4} .0028047{col 67}{space 3} .0409406
+{txt}{space 2}potexper_D {c |}{col 14}{res}{space 2} .0114422{col 26}{space 2} .0047082{col 37}{space 1}    2.43{col 46}{space 3}0.015{col 54}{space 4} .0022133{col 67}{space 3}  .020671
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .0419012{col 26}{space 2} .0064347{col 37}{space 1}    6.51{col 46}{space 3}0.000{col 54}{space 4} .0292883{col 67}{space 3} .0545141
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res}  .1752942
+     {txt}sigma_e {c |} {res} .39181966
+         {txt}rho {c |} {res} .16677308{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+F test that all u_i=0: F({res}2094{txt}, {res}13644{txt}) = {res}0.49{col 62}{txt}Prob > F = {res}1.0000
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\home\Desktop\exercise 4.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}12 Apr 2019, 20:46:45
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

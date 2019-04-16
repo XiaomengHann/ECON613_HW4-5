@@ -1,0 +1,414 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\home\Desktop\exercise 2.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}12 Apr 2019, 15:39:20
+
+{com}. clear all
+{res}
+{com}. 
+. set more off, perm
+{txt}({cmd:set more} preference recorded)
+
+{com}. 
+. set scrollbufsize 2000000
+{txt}({cmd:set scrollbufsize} will take effect the next time you launch Stata)
+
+{com}. 
+. cd "C:\Users\home\Desktop\class\ECON 613\HW5"
+{res}C:\Users\home\Desktop\class\ECON 613\HW5
+
+{com}. 
+. pwd
+{res}C:\Users\home\Desktop\class\ECON 613\HW5
+
+{com}. 
+. 
+. 
+. * Question 1
+
+. 
+. set seed 100
+
+. 
+. set obs 10000
+{txt}{p}
+number of observations (_N)  was 0,
+now 10,000
+{p_end}
+
+{com}. 
+. generate u1 = runiform(1,3)
+
+. 
+. generate u2 = rgamma(3,2)
+
+. 
+. generate u3 = rbinomial(10000,0.3)
+
+. 
+. generate eps = rnormal(2,1)
+
+. 
+. generate Y = 0.5 + 1.2*u1 -0.9*u2 + 0.1*u3 + eps
+
+. 
+. su Y
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 11}Y {c |}{res}     10,000    299.4644    5.703587   276.0765   317.4914
+
+{com}. 
+. 
+. 
+. 
+. 
+. egen mean_Y = mean(Y)
+
+. 
+. generate ydum = 0
+
+. 
+. replace ydum = 1 if Y > mean_Y
+{txt}(5,096 real changes made)
+
+{com}. 
+. gen ydum_2 = (Y > mean_Y)
+
+. 
+. tab ydum
+
+       {txt}ydum {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}      4,904       49.04       49.04
+{txt}          1 {c |}{res}      5,096       50.96      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}     10,000      100.00
+
+{com}. 
+. 
+. 
+. * Question 2
+
+. 
+. corr Y u1
+{txt}(obs=10,000)
+
+             {c |}        Y       u1
+{hline 13}{c +}{hline 18}
+           Y {c |}{res}   1.0000
+          {txt}u1 {c |}{res}   0.1160   1.0000
+
+
+{com}. 
+. reg Y u1 u2 u3
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}    10,000
+{txt}{hline 13}{c +}{hline 34}   F(3, 9996)      > {res} 99999.00
+{txt}       Model {c |} {res} 315329.133         3  105109.711   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  9947.3343     9,996  .995131483   {txt}R-squared       ={res}    0.9694
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.9694
+{txt}       Total {c |} {res} 325276.467     9,999  32.5308998   {txt}Root MSE        =   {res} .99756
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}           Y{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 1.175044{col 26}{space 2} .0171802{col 37}{space 1}   68.40{col 46}{space 3}0.000{col 54}{space 4} 1.141367{col 67}{space 3}  1.20872
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.9003673{col 26}{space 2} .0028711{col 37}{space 1} -313.59{col 46}{space 3}0.000{col 54}{space 4}-.9059953{col 67}{space 3}-.8947393
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1005889{col 26}{space 2} .0002157{col 37}{space 1}  466.41{col 46}{space 3}0.000{col 54}{space 4} .1001662{col 67}{space 3} .1010117
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .8009973{col 26}{space 2} .6478174{col 37}{space 1}    1.24{col 46}{space 3}0.216{col 54}{space 4}-.4688551{col 67}{space 3}  2.07085
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{com}. 
+. ssc install outreg2
+{txt}checking {hilite:outreg2} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. 
+. outreg2 using "result.xls"
+{txt}{browse `"result.xls"'}
+{browse `"C:\Users\home\Desktop\class\ECON 613\HW5"' :dir}{com} : {txt}{stata `"seeout using "result.txt""':seeout}
+
+{com}. 
+. bootstrap, reps(49): regress Y u1 u2 u3
+{txt}(running regress on estimation sample)
+{res}
+{txt}Bootstrap replications ({res}49{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+.................................................
+{res}
+{txt}Linear regression{col 49}Number of obs{col 67}= {res}    10,000
+{txt}{col 49}Replications{col 67}= {res}        49
+{txt}{col 49}Wald chi2({res}3{txt}){col 67}= {res} 358306.09
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 49}R-squared{col 67}= {res}    0.9694
+{txt}{col 49}Adj R-squared{col 67}= {res}    0.9694
+{txt}{col 49}Root MSE{col 67}= {res}    0.9976
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}   Observed{col 26}   Bootstrap{col 54}         Norm{col 67}al-based
+{col 1}           Y{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 1.175044{col 26}{space 2} .0168205{col 37}{space 1}   69.86{col 46}{space 3}0.000{col 54}{space 4} 1.142076{col 67}{space 3} 1.208011
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.9003673{col 26}{space 2} .0029568{col 37}{space 1} -304.51{col 46}{space 3}0.000{col 54}{space 4}-.9061625{col 67}{space 3} -.894572
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1005889{col 26}{space 2}  .000259{col 37}{space 1}  388.30{col 46}{space 3}0.000{col 54}{space 4} .1000812{col 67}{space 3} .1010966
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .8009973{col 26}{space 2} .7839713{col 37}{space 1}    1.02{col 46}{space 3}0.307{col 54}{space 4}-.7355582{col 67}{space 3} 2.337553
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. bootstrap, reps(499): regress Y u1 u2 u3
+{txt}(running regress on estimation sample)
+{res}
+{txt}Bootstrap replications ({res}499{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+..................................................   150
+..................................................   200
+..................................................   250
+..................................................   300
+..................................................   350
+..................................................   400
+..................................................   450
+.................................................
+{res}
+{txt}Linear regression{col 49}Number of obs{col 67}= {res}    10,000
+{txt}{col 49}Replications{col 67}= {res}       499
+{txt}{col 49}Wald chi2({res}3{txt}){col 67}= {res} 283965.16
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 49}R-squared{col 67}= {res}    0.9694
+{txt}{col 49}Adj R-squared{col 67}= {res}    0.9694
+{txt}{col 49}Root MSE{col 67}= {res}    0.9976
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}   Observed{col 26}   Bootstrap{col 54}         Norm{col 67}al-based
+{col 1}           Y{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 1.175044{col 26}{space 2}  .017771{col 37}{space 1}   66.12{col 46}{space 3}0.000{col 54}{space 4} 1.140213{col 67}{space 3} 1.209874
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.9003673{col 26}{space 2} .0028295{col 37}{space 1} -318.21{col 46}{space 3}0.000{col 54}{space 4} -.905913{col 67}{space 3}-.8948216
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1005889{col 26}{space 2} .0002219{col 37}{space 1}  453.32{col 46}{space 3}0.000{col 54}{space 4}  .100154{col 67}{space 3} .1010238
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .8009973{col 26}{space 2} .6634689{col 37}{space 1}    1.21{col 46}{space 3}0.227{col 54}{space 4}-.4993779{col 67}{space 3} 2.101373
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. 
+. 
+. * Question 4 & 5
+
+. 
+. probit ydum u1 u2 u3
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-6929.6285}  
+Iteration 1:{space 3}log likelihood = {res:-1323.9405}  
+Iteration 2:{space 3}log likelihood = {res:-1288.2149}  
+Iteration 3:{space 3}log likelihood = {res: -1287.819}  
+Iteration 4:{space 3}log likelihood = {res:-1287.8187}  
+Iteration 5:{space 3}log likelihood = {res:-1287.8187}  
+{res}
+{txt}Probit regression{col 49}Number of obs{col 67}= {res}    10,000
+{txt}{col 49}LR chi2({res}3{txt}){col 67}= {res}  11283.62
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-1287.8187{txt}{col 49}Pseudo R2{col 67}= {res}    0.8142
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        ydum{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 1.132912{col 26}{space 2} .0560252{col 37}{space 1}   20.22{col 46}{space 3}0.000{col 54}{space 4} 1.023104{col 67}{space 3} 1.242719
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.9120145{col 26}{space 2} .0249007{col 37}{space 1}  -36.63{col 46}{space 3}0.000{col 54}{space 4}-.9608189{col 67}{space 3}  -.86321
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1018701{col 26}{space 2} .0026759{col 37}{space 1}   38.07{col 46}{space 3}0.000{col 54}{space 4} .0966254{col 67}{space 3} .1071148
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-302.3891{col 26}{space 2} 7.947723{col 37}{space 1}  -38.05{col 46}{space 3}0.000{col 54}{space 4}-317.9664{col 67}{space 3}-286.8119
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: 1452 failures and 1390 successes completely determined.{p_end}
+
+{com}. 
+. margins, dydx(*) atmeans vce(delta)
+{res}
+{txt}Conditional marginal effects{col 49}Number of obs{col 67}= {res}    10,000
+{txt}Model VCE{col 14}: {res}OIM
+
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:Expression}:{space 1}{res:Pr(ydum), predict()}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:dy/dx w.r.t.}:{space 1}{res:u1 u2 u3}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:at}:{space 1}{res:{txt:u1}{space 14}{txt:=} {space 4}2.00771 {txt:(mean)}}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:u2}{space 14}{txt:=} {space 3}6.012179 {txt:(mean)}}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:u3}{space 14}{txt:=} {space 4}2999.51 {txt:(mean)}}{p_end}
+{p2colreset}{...}
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26} Delta-method
+{col 14}{c |}      dy/dx{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} .4516502{col 26}{space 2} .0223285{col 37}{space 1}   20.23{col 46}{space 3}0.000{col 54}{space 4} .4078871{col 67}{space 3} .4954132
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.3635866{col 26}{space 2} .0098969{col 37}{space 1}  -36.74{col 46}{space 3}0.000{col 54}{space 4}-.3829842{col 67}{space 3} -.344189
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .0406119{col 26}{space 2} .0010656{col 37}{space 1}   38.11{col 46}{space 3}0.000{col 54}{space 4} .0385234{col 67}{space 3} .0427003
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{com}. 
+. logit ydum u1 u2 u3
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-6929.6285}  
+Iteration 1:{space 3}log likelihood = {res:-1355.3844}  
+Iteration 2:{space 3}log likelihood = {res:-1292.6276}  
+Iteration 3:{space 3}log likelihood = {res:-1292.0536}  
+Iteration 4:{space 3}log likelihood = {res:-1292.0526}  
+Iteration 5:{space 3}log likelihood = {res:-1292.0526}  
+{res}
+{txt}Logistic regression{col 49}Number of obs{col 67}= {res}    10,000
+{txt}{col 49}LR chi2({res}3{txt}){col 67}= {res}  11275.15
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-1292.0526{txt}{col 49}Pseudo R2{col 67}= {res}    0.8135
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        ydum{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 2.057558{col 26}{space 2} .1046452{col 37}{space 1}   19.66{col 46}{space 3}0.000{col 54}{space 4} 1.852458{col 67}{space 3} 2.262659
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-1.647092{col 26}{space 2} .0492343{col 37}{space 1}  -33.45{col 46}{space 3}0.000{col 54}{space 4} -1.74359{col 67}{space 3}-1.550595
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1839136{col 26}{space 2} .0053234{col 37}{space 1}   34.55{col 46}{space 3}0.000{col 54}{space 4}   .17348{col 67}{space 3} .1943472
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-545.9487{col 26}{space 2} 15.81095{col 37}{space 1}  -34.53{col 46}{space 3}0.000{col 54}{space 4}-576.9376{col 67}{space 3}-514.9598
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: 457 failures and 329 successes completely determined.{p_end}
+
+{com}. 
+. margins, dydx(*) atmeans vce(delta)
+{res}
+{txt}Conditional marginal effects{col 49}Number of obs{col 67}= {res}    10,000
+{txt}Model VCE{col 14}: {res}OIM
+
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:Expression}:{space 1}{res:Pr(ydum), predict()}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:dy/dx w.r.t.}:{space 1}{res:u1 u2 u3}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:at}:{space 1}{res:{txt:u1}{space 14}{txt:=} {space 4}2.00771 {txt:(mean)}}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:u2}{space 14}{txt:=} {space 3}6.012179 {txt:(mean)}}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:u3}{space 14}{txt:=} {space 4}2999.51 {txt:(mean)}}{p_end}
+{p2colreset}{...}
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26} Delta-method
+{col 14}{c |}      dy/dx{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} .5137631{col 26}{space 2} .0261146{col 37}{space 1}   19.67{col 46}{space 3}0.000{col 54}{space 4} .4625795{col 67}{space 3} .5649467
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.4112716{col 26}{space 2} .0122423{col 37}{space 1}  -33.59{col 46}{space 3}0.000{col 54}{space 4} -.435266{col 67}{space 3}-.3872771
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .0459224{col 26}{space 2} .0013272{col 37}{space 1}   34.60{col 46}{space 3}0.000{col 54}{space 4} .0433211{col 67}{space 3} .0485237
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{com}. 
+. regress ydum u1 u2 u3, vce(robust)
+
+{txt}Linear regression                               Number of obs     = {res}    10,000
+                                                {txt}F(3, 9996)        =  {res}  5524.02
+                                                {txt}Prob > F          = {res}    0.0000
+                                                {txt}R-squared         = {res}    0.6088
+                                                {txt}Root MSE          =    {res} .31275
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}        ydum{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} .0818024{col 26}{space 2} .0053584{col 37}{space 1}   15.27{col 46}{space 3}0.000{col 54}{space 4} .0712989{col 67}{space 3}  .092306
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.0601577{col 26}{space 2} .0009596{col 37}{space 1}  -62.69{col 46}{space 3}0.000{col 54}{space 4}-.0620386{col 67}{space 3}-.0582767
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .0071021{col 26}{space 2} .0000648{col 37}{space 1}  109.56{col 46}{space 3}0.000{col 54}{space 4}  .006975{col 67}{space 3} .0072292
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-20.59574{col 26}{space 2} .1947444{col 37}{space 1} -105.76{col 46}{space 3}0.000{col 54}{space 4}-20.97748{col 67}{space 3}  -20.214
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{com}. 
+. 
+. 
+. * I fail to find the solution using bootstrap to calculate the se for marginal effects.
+
+. 
+. * only able to calculate the se for betas.
+
+. 
+. probit ydum u1 u2 u3, vce(bootstrap, reps(499))
+{txt}(running probit on estimation sample)
+{res}
+{txt}Bootstrap replications ({res}499{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+..................................................   150
+..................................................   200
+..................................................   250
+..................................................   300
+..................................................   350
+..................................................   400
+..................................................   450
+.................................................
+{res}
+{txt}Probit regression{col 49}Number of obs{col 67}= {res}    10,000
+{txt}{col 49}Replications{col 67}= {res}       499
+{txt}{col 49}Wald chi2({res}3{txt}){col 67}= {res}   1399.36
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-1287.8187{txt}{col 49}Pseudo R2{col 67}= {res}    0.8142
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}   Observed{col 26}   Bootstrap{col 54}         Norm{col 67}al-based
+{col 1}        ydum{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 1.132912{col 26}{space 2} .0575623{col 37}{space 1}   19.68{col 46}{space 3}0.000{col 54}{space 4} 1.020092{col 67}{space 3} 1.245732
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-.9120145{col 26}{space 2} .0253808{col 37}{space 1}  -35.93{col 46}{space 3}0.000{col 54}{space 4}-.9617599{col 67}{space 3} -.862269
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1018701{col 26}{space 2} .0027447{col 37}{space 1}   37.12{col 46}{space 3}0.000{col 54}{space 4} .0964906{col 67}{space 3} .1072496
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-302.3891{col 26}{space 2} 8.157659{col 37}{space 1}  -37.07{col 46}{space 3}0.000{col 54}{space 4}-318.3778{col 67}{space 3}-286.4004
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: 1452 failures and 1390 successes completely determined.{p_end}
+
+{com}. 
+. logit ydum u1 u2 u3, vce(bootstrap, reps(499))
+{txt}(running logit on estimation sample)
+{res}
+{txt}Bootstrap replications ({res}499{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+..................................................   150
+..................................................   200
+..................................................   250
+..................................................   300
+..................................................   350
+..................................................   400
+..................................................   450
+.................................................
+{res}
+{txt}Logistic regression{col 49}Number of obs{col 67}= {res}    10,000
+{txt}{col 49}Replications{col 67}= {res}       499
+{txt}{col 49}Wald chi2({res}3{txt}){col 67}= {res}   1284.92
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-1292.0526{txt}{col 49}Pseudo R2{col 67}= {res}    0.8135
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}   Observed{col 26}   Bootstrap{col 54}         Norm{col 67}al-based
+{col 1}        ydum{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}u1 {c |}{col 14}{res}{space 2} 2.057558{col 26}{space 2} .1091902{col 37}{space 1}   18.84{col 46}{space 3}0.000{col 54}{space 4}  1.84355{col 67}{space 3} 2.271567
+{txt}{space 10}u2 {c |}{col 14}{res}{space 2}-1.647092{col 26}{space 2} .0483982{col 37}{space 1}  -34.03{col 46}{space 3}0.000{col 54}{space 4}-1.741951{col 67}{space 3}-1.552234
+{txt}{space 10}u3 {c |}{col 14}{res}{space 2} .1839136{col 26}{space 2} .0051391{col 37}{space 1}   35.79{col 46}{space 3}0.000{col 54}{space 4} .1738412{col 67}{space 3} .1939859
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-545.9487{col 26}{space 2} 15.27045{col 37}{space 1}  -35.75{col 46}{space 3}0.000{col 54}{space 4}-575.8782{col 67}{space 3}-516.0191
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: 457 failures and 329 successes completely determined.{p_end}
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\home\Desktop\exercise 2.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}12 Apr 2019, 15:41:10
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
