@@ -166,26 +166,36 @@ lm(alpha ~ indability + indmother + indfather + indbrkn + indsibling, data=data_
 # Problem 1
 # There could be some measurement errors when we estimate the fixed effects, so we should use bootstrap method.
 # Take the between effect for example
-boot_between <- matrix(c(0,0,0,0),nrow = 1, ncol = 4)
-for(i in 1:450){
-  i <- sample(random_data[,1],100,replace = TRUE)
-  id <- as.matrix(between_all[i,1])
-  X1 <- as.vector(between_all[i,2])
-  X2 <- as.vector(between_all[i,3])
-  X3 <- as.vector(between_all[i,4])
-  boot_between2 <- as.matrix(cbind(id,X1,X2,X3))
-  boot_between <- rbind(boot_between,boot_between2)
+d <- panel_data[panel_data[,1] %in% sample(1:2178,100),]
+boot_between <- matrix(0,nrow = 1, ncol = 6)
+for(i in 1:100){
+  i <- as.matrix(sample(unique(d[,1]),100,replace = TRUE),ncol = 1)
+  indi <- matrix(c(0),nrow=1,ncol = 10)
+  colnames(indi) = c("PERSONID","EDUC","LOGWAGE","POTEXPER","TIMETRND","ABILITY","MOTHERED","FATHERED","BRKNHOME","SIBLINGS") 
+  for(j in 1:100){
+    c <- as.data.frame(d[d[,1] %in% i[j,],])
+    indi <- rbind(indi, c)
+  }
+  indi <- indi[2:nrow(indi),]
+  boot_mean <- aggregate(cbind(LOGWAGE,EDUC,POTEXPER)~PERSONID,data = indi,mean)
+  alpha2 <- matrix(boot_mean[,2]-(boot_mean[,3]*0.3398509+boot_mean[,4]*0.2039105),ncol = 1)
+  indi <- indi[!duplicated(indi$PERSONID),]
+  boot_x <- as.matrix(indi[,6:10])
+  data2 <- as.data.frame(cbind(alpha2,boot_x))
+  a <- lm(alpha2 ~ boot_x)$coef
+  boot_between <- rbind(boot_between,a)
 }
-boot_between <- as.data.frame(boot_between[2:45001,])
-boot_b_avgwage <- boot_between$X1
-boot_b_aveduc <- boot_between$X2
-boot_b_avpot <- boot_between$X3
-lm(boot_b_avgwage ~ boot_b_aveduc + boot_b_avpot, data=boot_between)
-# Coefficients:
-# (Intercept)  boot_b_aveduc   boot_b_avpot  
-# 0.82567        0.07927        0.05317  
+boot_between <- boot_between[2:nrow(boot_between),]
+sd_1 <- sd(boot_between[,1])
+sd_2 <- sd(boot_between[,2])
+sd_3 <- sd(boot_between[,3])
+sd_4 <- sd(boot_between[,4])
+sd_5 <- sd(boot_between[,5])
+sd_6 <- sd(boot_between[,6])
+sd_all <- cbind(sd_1,sd_2,sd_3,sd_4,sd_5,sd_6)
+# 0.4976356 0.1164713 0.04946196 0.03570656 0.2256428 0.04747988
 
-
+# Just a point of considering...
 # Problem 2
 # The previous standard errors are biased because they are correlated over t for given i and have the problem of heteroscedasticity.
 # The inference should be based on panel-robust standard errors that permit errors to be correlated over time for a given individual and to have variances and covariances that differ across individuals.
