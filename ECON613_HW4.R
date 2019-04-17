@@ -58,6 +58,7 @@ dat_prog  =  data_all2 %>%
 # table individual ID and let sum divide the frequency to get the average of data
 fre <- as.matrix(table(data_all2[,1]))
 aveg <- as.data.frame(dat_prog[,2:4]/fre)
+between_all <- as.data.frame(cbind(dat_prog[,1],aveg))
 avwage <- aveg[,1]
 aveduc <- aveg[,2]
 avpot <- aveg[,3]
@@ -113,7 +114,7 @@ plm(indwage ~ indeduc + indpot, data=data_all2, model = "fd")
 # Question 4
 # randomly choose the data of 100 individuals
 random_data <- aveg_all[sample(1:nrow(aveg_all),100,replace=FALSE),]
-random_data <- random_data[,1]
+random_data <- as.matrix(random_data[,1])
 d <- c(0)
 
 # Method 1
@@ -162,6 +163,30 @@ lm(alpha ~ indability + indmother + indfather + indbrkn + indsibling, data=data_
 # -2.5651503   -0.3357836   -0.0028097    0.0004628    0.2192221    0.0229109
 
 
+# Problem 1
+# There could be some measurement errors when we estimate the fixed effects, so we should use bootstrap method.
+# Take the between effect for example
+boot_between <- matrix(c(0,0,0,0),nrow = 1, ncol = 4)
+for(i in 1:450){
+  i <- sample(random_data[,1],100,replace = TRUE)
+  id <- as.matrix(between_all[i,1])
+  X1 <- as.vector(between_all[i,2])
+  X2 <- as.vector(between_all[i,3])
+  X3 <- as.vector(between_all[i,4])
+  boot_between2 <- as.matrix(cbind(id,X1,X2,X3))
+  boot_between <- rbind(boot_between,boot_between2)
+}
+boot_between <- as.data.frame(boot_between[2:45001,])
+boot_b_avgwage <- boot_between$X1
+boot_b_aveduc <- boot_between$X2
+boot_b_avpot <- boot_between$X3
+lm(boot_b_avgwage ~ boot_b_aveduc + boot_b_avpot, data=boot_between)
+# Coefficients:
+# (Intercept)  boot_b_aveduc   boot_b_avpot  
+# 0.82567        0.07927        0.05317  
+
+
+# Problem 2
 # The previous standard errors are biased because they are correlated over t for given i and have the problem of heteroscedasticity.
 # The inference should be based on panel-robust standard errors that permit errors to be correlated over time for a given individual and to have variances and covariances that differ across individuals.
 # We use the alternative method to get robust standard errors (sandwich estimate of the vatiance matrix).
