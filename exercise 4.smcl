@@ -1,9 +1,9 @@
 {smcl}
 {com}{sf}{ul off}{txt}{.-}
       name:  {res}<unnamed>
-       {txt}log:  {res}C:\Users\home\Desktop\exercise 4.smcl
+       {txt}log:  {res}C:\Users\home\Desktop\class\ECON 613\HW5\exercise 4.smcl
   {txt}log type:  {res}smcl
- {txt}opened on:  {res}12 Apr 2019, 20:46:16
+ {txt}opened on:  {res}16 Apr 2019, 20:33:02
 
 {com}. * Question 1
 
@@ -20,6 +20,9 @@
 
 {com}. 
 . 
+. 
+. * turn the data set into panel data
+
 . 
 . insheet using "C:\Users\home\Desktop\class\ECON 613\HW4\Koop-Tobias.csv", clear
 {txt}(10 vars, 17,919 obs)
@@ -62,6 +65,9 @@ Distribution of T_i:   min      5%     25%       50%       75%     95%     max
 
 {com}. 
 . 
+. 
+. * choose the individuals whose ID are 1, 2, 4, 6, 8, plot the figures
+
 . 
 . gen ind1 = personid==1
 
@@ -128,6 +134,9 @@ Distribution of T_i:   min      5%     25%       50%       75%     95%     max
 . * Question 2
 
 . 
+. * estimate the random effect
+
+. 
 .  xtreg logwage educ potexper, re
 {res}
 {txt}Random-effects GLS regression                   Number of obs     = {res}    17,919
@@ -159,6 +168,9 @@ Distribution of T_i:   min      5%     25%       50%       75%     95%     max
 . * Question 3
 
 . 
+. * estimate the within estimator
+
+. 
 . xtreg logwage educ potexper, fe
 {res}
 {txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    17,919
@@ -186,6 +198,9 @@ Distribution of T_i:   min      5%     25%       50%       75%     95%     max
 F test that all u_i=0: F({res}2177{txt}, {res}15739{txt}) = {res}9.95{col 62}{txt}Prob > F = {res}0.0000
 
 {com}. 
+. * estimate the between estimator
+
+. 
 . xtreg logwage educ potexper, be
 
 {txt}Between regression (regression on group means)  Number of obs     = {res}    17,919
@@ -210,82 +225,55 @@ F test that all u_i=0: F({res}2177{txt}, {res}15739{txt}) = {res}9.95{col 62}{tx
 {com}. 
 . 
 . 
-. xtset personid t
-{res}{txt}{col 8}panel variable:  {res}personid (unbalanced)
-{txt}{col 9}time variable:  {res}{col 25}t, 1 to 15
-{txt}{col 17}delta:  {res}1 unit
+. * estimate the first difference estimator
+
+. 
+. gen wage_d = logwage - logwage[_n-1]
+{txt}(1 missing value generated)
 
 {com}. 
-. xtdes
-
-{txt}personid:  {res}1{txt}, {res}2{txt}, ..., {res}2178                                   {txt}n ={res}       2178
-       {txt}t:  {res}1, 2, ..., 15                                     {txt}T ={res}         15
-           {txt}Delta(t) = {res}1 unit
-           {txt}Span(t)  = {res}15 periods
-           {txt}(personid*t uniquely identifies each observation)
-
-Distribution of T_i:   min      5%     25%       50%       75%     95%     max
-                    {res}     1       2       5         8        11      14      15
-
-{txt}{col 6}Freq.  Percent    Cum. {c |}  Pattern
- {hline 27}{c +}{c -}{c -}{hline 15}
-{res}      202      9.27    9.27{txt} {c |}  {res}11111111.......
-      202      9.27   18.55{txt} {c |}  {res}1111111111.....
-      201      9.23   27.78{txt} {c |}  {res}1111111........
-      200      9.18   36.96{txt} {c |}  {res}111111111......
-      182      8.36   45.32{txt} {c |}  {res}11111111111....
-      165      7.58   52.89{txt} {c |}  {res}111111.........
-      148      6.80   59.69{txt} {c |}  {res}11111..........
-      148      6.80   66.48{txt} {c |}  {res}111111111111...
-      136      6.24   72.73{txt} {c |}  {res}1111111111111..
-      594     27.27  100.00{txt} {c |} (other patterns)
- {hline 27}{c +}{c -}{c -}{hline 15}
-{res}     2178    100.00        {txt} {c |}  {res}XXXXXXXXXXXXXXX
+. gen id_d = personid - personid[_n-1]
+{txt}(1 missing value generated)
 
 {com}. 
-. gen logwage_D = D.logwage
-{txt}(2,178 missing values generated)
+. gen edu_d = educ - educ[_n-1]
+{txt}(1 missing value generated)
 
 {com}. 
-. gen educ_D = D.educ
-{txt}(2,178 missing values generated)
+. gen exp_d = potexper - potexper[_n-1]
+{txt}(1 missing value generated)
 
 {com}. 
-. gen potexper_D = D.potexper
-{txt}(2,178 missing values generated)
+. drop if id_d == 1
+{txt}(2,177 observations deleted)
 
 {com}. 
-. xtreg logwage_D educ_D potexper_D, fe
-{res}
-{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}    15,741
-{txt}Group variable: {res}personid{txt}{col 49}Number of groups{col 67}={col 69}{res}     2,095
+. drop if id_d == .
+{txt}(1 observation deleted)
 
-{txt}R-sq:{col 49}Obs per group:
-     within  = {res}0.0008{col 63}{txt}min{col 67}={col 69}{res}         1
-{txt}     between = {res}0.0010{col 63}{txt}avg{col 67}={col 69}{res}       7.5
-{txt}     overall = {res}0.0010{col 63}{txt}max{col 67}={col 69}{res}        14
+{com}. 
+. reg wage_d edu_d exp_d
 
-{txt}{col 49}F({res}2{txt},{res}13644{txt}){col 67}={col 70}{res}     5.32
-{txt}corr(u_i, Xb){col 16}= {res}-0.0017{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0049
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}    15,741
+{txt}{hline 13}{c +}{hline 34}   F(2, 15738)     = {res}    11.50
+{txt}       Model {c |} {res}  3.2930869         2  1.64654345   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 2252.70337    15,738  .143137843   {txt}R-squared       ={res}    0.0015
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0013
+{txt}       Total {c |} {res} 2255.99645    15,740  .143328873   {txt}Root MSE        =   {res} .37834
 
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-{col 1}   logwage_D{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{col 1}      wage_d{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-{space 6}educ_D {c |}{col 14}{res}{space 2} .0218726{col 26}{space 2} .0097279{col 37}{space 1}    2.25{col 46}{space 3}0.025{col 54}{space 4} .0028047{col 67}{space 3} .0409406
-{txt}{space 2}potexper_D {c |}{col 14}{res}{space 2} .0114422{col 26}{space 2} .0047082{col 37}{space 1}    2.43{col 46}{space 3}0.015{col 54}{space 4} .0022133{col 67}{space 3}  .020671
-{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .0419012{col 26}{space 2} .0064347{col 37}{space 1}    6.51{col 46}{space 3}0.000{col 54}{space 4} .0292883{col 67}{space 3} .0545141
-{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-     sigma_u {c |} {res}  .1752942
-     {txt}sigma_e {c |} {res} .39181966
-         {txt}rho {c |} {res} .16677308{txt}   (fraction of variance due to u_i)
-{hline 13}{c BT}{hline 64}
-F test that all u_i=0: F({res}2094{txt}, {res}13644{txt}) = {res}0.49{col 62}{txt}Prob > F = {res}1.0000
-
+{space 7}edu_d {c |}{col 14}{res}{space 2} .0383523{col 26}{space 2} .0081414{col 37}{space 1}    4.71{col 46}{space 3}0.000{col 54}{space 4} .0223942{col 67}{space 3} .0543104
+{txt}{space 7}exp_d {c |}{col 14}{res}{space 2} .0039891{col 26}{space 2} .0038866{col 37}{space 1}    1.03{col 46}{space 3}0.305{col 54}{space 4}-.0036291{col 67}{space 3} .0116072
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .0494644{col 26}{space 2}  .005536{col 37}{space 1}    8.94{col 46}{space 3}0.000{col 54}{space 4} .0386132{col 67}{space 3} .0603155
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
 {com}. log close
       {txt}name:  {res}<unnamed>
-       {txt}log:  {res}C:\Users\home\Desktop\exercise 4.smcl
+       {txt}log:  {res}C:\Users\home\Desktop\class\ECON 613\HW5\exercise 4.smcl
   {txt}log type:  {res}smcl
- {txt}closed on:  {res}12 Apr 2019, 20:46:45
+ {txt}closed on:  {res}16 Apr 2019, 20:33:21
 {txt}{.-}
 {smcl}
 {txt}{sf}{ul off}

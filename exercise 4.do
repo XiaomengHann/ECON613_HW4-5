@@ -42,9 +42,10 @@ xtreg logwage educ potexper, fe
 xtreg logwage educ potexper, be
 
 * estimate the first difference estimator
-xtset personid t
-xtdes
-gen logwage_D = D.logwage
-gen educ_D = D.educ
-gen potexper_D = D.potexper
-xtreg logwage_D educ_D potexper_D, fe
+gen wage_d = logwage - logwage[_n-1]
+gen id_d = personid - personid[_n-1]
+gen edu_d = educ - educ[_n-1]
+gen exp_d = potexper - potexper[_n-1]
+drop if id_d == 1
+drop if id_d == .
+reg wage_d edu_d exp_d
